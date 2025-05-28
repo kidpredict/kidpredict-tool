@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KidPredict - Gender Predictor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: #f4f9ff;
+    }
+    h1 {
+      color: #ff6b81;
+    }
+    input {
+      padding: 10px;
+      margin: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .section {
+      margin: 25px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔮 KidPredict: Baby Gender Predictor</h1>
+  <p>Choose one of the two options below to predict your baby's gender using the Chinese calendar.</p>
+
+  <div class="section">
+    <label><strong>Mother's Date of Birth:</strong></label><br/>
+    <input type="date" id="dob" /><br/>
+  </div>
+
+  <div class="section">
+    <h3>Option A: Enter Expected Delivery Date</h3>
+    <input type="date" id="deliveryDate" />
+    <p><em>(Leave conception date blank if using this)</em></p>
+  </div>
+
+  <div class="section">
+    <h3>Option B: Enter Conception Date</h3>
+    <input type="date" id="conceptionDate" />
+    <p><em>(Leave delivery date blank if using this)</em></p>
+  </div>
+
+  <button onclick="predictGender()">Predict Gender</button>
+
+  <div id="output"></div>
+
+  <script>
+    function predictGender() {
+      const dob = new Date(document.getElementById('dob').value);
+      const deliveryDateInput = document.getElementById('deliveryDate').value;
+      const conceptionDateInput = document.getElementById('conceptionDate').value;
+
+      if (!dob || isNaN(dob.getTime())) {
+        document.getElementById('output').innerText = "Please enter a valid Mother's Date of Birth.";
+        return;
+      }
+
+      let conceptionDate;
+
+      if (conceptionDateInput) {
+        conceptionDate = new Date(conceptionDateInput);
+      } else if (deliveryDateInput) {
+        const edd = new Date(deliveryDateInput);
+        conceptionDate = new Date(edd);
+        conceptionDate.setDate(conceptionDate.getDate() - 266); // approx. conception = EDD - 38 weeks
+      } else {
+        document.getElementById('output').innerText = "Please enter either the expected delivery date or conception date.";
+        return;
+      }
+
+      const motherAgeAtConception = conceptionDate.getFullYear() - dob.getFullYear();
+      const conceptionMonth = conceptionDate.getMonth() + 1;
+
+      if (motherAgeAtConception < 18 || motherAgeAtConception > 60) {
+        document.getElementById('output').innerText = "Sorry, prediction not available for this age.";
+        return;
+      }
+
+      const calendar = [
+        ["Girl","Boy","Girl","Boy","Boy","Boy","Boy","Boy","Boy","Boy","Boy","Boy"], // 18
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Boy","Boy","Boy","Boy","Boy","Boy"], // 19
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Boy","Boy","Boy","Boy"], // 20
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Boy","Boy","Boy","Boy"], // 21
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Girl","Girl","Boy","Boy"], // 22
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Boy","Girl","Boy","Boy","Girl","Girl"], // 23
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Boy","Girl","Girl","Boy"], // 24
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 25
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 26
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 27
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 28
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 29
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 30
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 31
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 32
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 33
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 34
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 35
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 36
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 37
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 38
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 39
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 40
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 41
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 42
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 43
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 44
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 45
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 46
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 47
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 48
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 49
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 50
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 51
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 52
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 53
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 54
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 55
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 56
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 57
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 58
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], // 59
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], // 60
+      ];
+
+      const result = calendar[motherAgeAtConception - 18][conceptionMonth - 1];
+      const emoji = result === "Boy" ? "👦" : "👧";
+      document.getElementById('output').innerText = `Prediction: It's a ${result}! ${emoji}`;
+    }
+  </script>
+
+</body>
+</html>
