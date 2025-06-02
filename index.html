@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KidPredict - Baby Gender Predictor</title>
+  <style>
+    body {
+      font-family: 'Proxima Nova', Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(to bottom right, #f2a6f2, #84c1f2);
+      color: #333;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #333;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .section {
+      margin: 30px auto;
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 25px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .subheading {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #5a008a;
+      text-decoration: underline;
+    }
+
+    input {
+      padding: 10px;
+      margin: 8px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #5a008a;
+      box-shadow: 0 0 5px #f28bf2;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #5a008a;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+      background-color: #7b00b3;
+    }
+
+    #output {
+      margin-top: 25px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #5a008a;
+    }
+
+    .option-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #fff8fd;
+      border-radius: 10px;
+      border: 1px dashed #ff9de3;
+    }
+
+    .disclaimer {
+      margin-top: 50px;
+      font-size: 10px;
+      font-style: italic;
+      font-family: 'Proxima Nova', sans-serif;
+      color: #fff;
+      line-height: 1.6;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+ <img src="kidpredict-logo.png" alt="KidPredict Logo" style="width: 120px; display: block; margin: 0 auto 10px auto;"/>
+
+  <h1>🔮 KidPredict: Baby Gender Predictor</h1>
+  <p style="font-style: italic;">A fun little tool to guess your baby’s gender – all in good humor!</p>
+
+  <div class="section">
+    <div class="subheading">👩‍🍼 Mother's Information</div>
+    <label><strong>Mother's Date of Birth:</strong></label><br/>
+    <input type="date" id="dob" /><br/>
+  </div>
+
+  <div class="section">
+    <div class="subheading">📅 Prediction Date (Choose One Only)</div>
+
+    <div class="option-box">
+      <h3>Option A: Enter Expected Delivery Date</h3>
+      <input type="date" id="deliveryDate" />
+      <p><em>(Leave conception date blank if using this)</em></p>
+    </div>
+
+    <div class="option-box">
+      <h3>Option B: Enter Conception Date</h3>
+      <input type="date" id="conceptionDate" />
+      <p><em>(Leave delivery date blank if using this)</em></p>
+    </div>
+  </div>
+
+  <button onclick="predictGender()">🎯 Predict Gender</button>
+
+  <div id="output"></div>
+
+  <div class="disclaimer">
+    <p>Don’t take us too seriously – but most likely, we’ll be right! 😉</p>
+    <p>This tool is intended for entertainment purposes only and does not provide scientifically validated or medical predictions. Gender determination before birth is prohibited in many countries across the world.</p>
+  </div>
+
+  <script>
+    function predictGender() {
+      const dob = document.getElementById("dob").value;
+      const deliveryDate = document.getElementById("deliveryDate").value;
+      const conceptionDate = document.getElementById("conceptionDate").value;
+
+      if (!dob) {
+        document.getElementById("output").innerText = "Please enter the mother's date of birth.";
+        return;
+      }
+
+      let predictionDate;
+      if (deliveryDate) {
+        predictionDate = new Date(deliveryDate);
+        predictionDate.setMonth(predictionDate.getMonth() - 9);
+      } else if (conceptionDate) {
+        predictionDate = new Date(conceptionDate);
+      } else {
+        document.getElementById("output").innerText = "Please enter either the delivery date or conception date.";
+        return;
+      }
+
+      const birthDate = new Date(dob);
+      const ageAtConception = predictionDate.getFullYear() - birthDate.getFullYear();
+      const motherMonth = predictionDate.getMonth() + 1;
+
+      // Chinese gender chart logic
+      const result = (ageAtConception + motherMonth) % 2 === 0 ? "👶 It's a Girl!" : "👦 It's a Boy!";
+      document.getElementById("output").innerText = result;
+    }
+  </script>
+</body>
+</html>
