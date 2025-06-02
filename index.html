@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KidPredict - Gender Predictor</title>
+  <style>
+    @font-face {
+      font-family: 'Proxima Nova';
+      src: local('Proxima Nova'), local('ProximaNova'),
+           url('https://fonts.cdnfonts.com/s/14561/ProximaNova-Regular.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background-color: #B873B8;
+      color: white;
+    }
+    h1 {
+      color: #fff;
+      font-size: 32px;
+    }
+    label, h3, p {
+      font-size: 18px;
+    }
+    input {
+      padding: 10px;
+      margin: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #output {
+      margin-top: 25px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .section {
+      margin: 30px 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .subheading {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-decoration: underline;
+    }
+    .disclaimer {
+      margin-top: 50px;
+      font-size: 8px;
+      font-style: italic;
+      font-family: 'Proxima Nova', sans-serif;
+      color: #f0e6f6;
+      line-height: 1.5;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .disclaimer p::before {
+      content: "* ";
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔮 KidPredict: Baby Gender Predictor</h1>
+  <p>Choose one of the two options below to predict your baby's gender using the Chinese calendar.</p>
+
+  <div class="section">
+    <div class="subheading">Mother's Information</div>
+    <label><strong>Mother's Date of Birth:</strong></label><br/>
+    <input type="date" id="dob" /><br/>
+  </div>
+
+  <div class="section">
+    <div class="subheading">Prediction Date (Choose One Only)</div>
+    <div>
+      <h3>Option A: Enter Expected Delivery Date</h3>
+      <input type="date" id="deliveryDate" />
+      <p><em>(Leave conception date blank if using this)</em></p>
+    </div>
+
+    <div>
+      <h3>Option B: Enter Conception Date</h3>
+      <input type="date" id="conceptionDate" />
+      <p><em>(Leave delivery date blank if using this)</em></p>
+    </div>
+  </div>
+
+  <button onclick="predictGender()">Predict Gender</button>
+
+  <div id="output"></div>
+
+  <div class="disclaimer">
+    <p>Don’t take us too seriously – but most likely, we’ll be right! 😉</p>
+    <p>This tool is intended for entertainment purposes only and does not provide scientifically validated or medical predictions. Gender determination before birth is prohibited in many countries across the world.</p>
+  </div>
+
+  <script>
+    function predictGender() {
+      const dob = new Date(document.getElementById('dob').value);
+      const deliveryDateInput = document.getElementById('deliveryDate').value;
+      const conceptionDateInput = document.getElementById('conceptionDate').value;
+
+      if (!dob || isNaN(dob.getTime())) {
+        document.getElementById('output').innerText = "Please enter a valid Mother's Date of Birth.";
+        return;
+      }
+
+      if (conceptionDateInput && deliveryDateInput) {
+        document.getElementById('output').innerText = "Please enter only one: either delivery date OR conception date.";
+        return;
+      }
+
+      let conceptionDate;
+
+      if (conceptionDateInput) {
+        conceptionDate = new Date(conceptionDateInput);
+      } else if (deliveryDateInput) {
+        const edd = new Date(deliveryDateInput);
+        conceptionDate = new Date(edd);
+        conceptionDate.setDate(conceptionDate.getDate() - 266); // EDD - 38 weeks
+      } else {
+        document.getElementById('output').innerText = "Please enter either the expected delivery date or conception date.";
+        return;
+      }
+
+      const motherAgeAtConception = conceptionDate.getFullYear() - dob.getFullYear();
+      const conceptionMonth = conceptionDate.getMonth() + 1;
+
+      if (motherAgeAtConception < 18 || motherAgeAtConception > 60) {
+        document.getElementById('output').innerText = "Sorry, prediction not available for this age.";
+        return;
+      }
+
+      const calendar = [/*...same calendar as before...*/];
+
+      const result = calendar[motherAgeAtConception - 18][conceptionMonth - 1];
+      const emoji = result === "Boy" ? "👦" : "👧";
+      document.getElementById('output').innerText = `Prediction: It's a ${result}! ${emoji}`;
+    }
+  </script>
+
+</body>
+</html>
