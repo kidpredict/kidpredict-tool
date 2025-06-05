@@ -12,99 +12,52 @@
       background: linear-gradient(to bottom right, #f2a6f2, #84c1f2);
       color: #333;
     }
-
     h1 {
       font-size: 36px;
       margin-bottom: 10px;
       color: #fff;
       text-shadow: 1px 1px 2px #333;
     }
-
-    p {
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
-
-    .section {
+    p       {font-size: 18px; margin-bottom: 15px;}
+    .section{
       margin: 30px auto;
-      background-color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255,255,255,.85);
       padding: 25px;
       border-radius: 20px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      width: 90%;  max-width: 600px;
+      box-shadow: 0 0 12px rgba(0,0,0,.2);
     }
-
-    .subheading {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #5a008a;
-      text-decoration: underline;
+    .subheading{
+      font-size: 22px; font-weight: bold; margin-bottom: 10px;
+      color:#5a008a; text-decoration: underline;
     }
-
-    input {
-      padding: 10px;
-      margin: 8px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+    input{
+      padding:10px; margin:8px; font-size:16px;
+      border-radius:8px; border:1px solid #ccc;
     }
-
-    input:focus {
-      outline: none;
-      border-color: #5a008a;
-      box-shadow: 0 0 5px #f28bf2;
+    input:focus{outline:none; border-color:#5a008a; box-shadow:0 0 5px #f28bf2;}
+    button{
+      padding:12px 24px; background:#5a008a; color:#fff; font-size:18px;
+      border:none; border-radius:10px; cursor:pointer;
+      transition:background .3s ease; box-shadow:0 4px 8px rgba(0,0,0,.2);
     }
-
-    button {
-      padding: 12px 24px;
-      background-color: #5a008a;
-      color: white;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    button:hover{background:#7b00b3;}
+    #output{margin-top:25px; font-size:24px; font-weight:bold; color:#5a008a;}
+    .option-box{
+      margin-top:20px; padding:15px; background:#fff8fd;
+      border-radius:10px; border:1px dashed #ff9de3;
     }
-
-    button:hover {
-      background-color: #7b00b3;
-    }
-
-    #output {
-      margin-top: 25px;
-      font-size: 24px;
-      font-weight: bold;
-      color: #5a008a;
-    }
-
-    .option-box {
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #fff8fd;
-      border-radius: 10px;
-      border: 1px dashed #ff9de3;
-    }
-
-    .disclaimer {
-      margin-top: 50px;
-      font-size: 10px;
-      font-style: italic;
-      font-family: 'Proxima Nova', sans-serif;
-      color: #fff;
-      line-height: 1.6;
-      text-align: left;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+    .disclaimer{
+      margin-top:50px; font-size:10px; font-style:italic;
+      font-family:'Proxima Nova',sans-serif; color:#fff; line-height:1.6;
+      text-align:left; max-width:600px; margin-left:auto; margin-right:auto;
     }
   </style>
 </head>
 <body>
 
- <img src="kidpredict-logo.png" alt="KidPredict Logo" style="width: 120px; display: block; margin: 0 auto 10px auto;"/>
+  <img src="kidpredict-logo.png" alt="KidPredict Logo"
+       style="width:120px;display:block;margin:0 auto 10px"/>
 
   <h1>🔮 KidPredict: Baby Gender Predictor</h1>
   <p style="font-style: italic;">A fun little tool to guess your baby’s gender – inspired by timeless folklore!</p>
@@ -136,39 +89,94 @@
   <div id="output"></div>
 
   <div class="disclaimer">
-    <p>Don’t take us too seriously – but most likely, we’ll be right! 😉</p>
-    <p>This tool is intended for entertainment purposes only and does not provide scientifically validated or medical predictions. Gender determination before birth is prohibited in many countries across the world.</p>
+    <p>* Don’t take us too seriously – but most likely, we’ll be right! 😉</p>
+    <p>* This tool is intended for entertainment purposes only and does not provide scientifically validated or medical predictions. Gender determination before birth is prohibited in many countries across the world.</p>
   </div>
 
   <script>
     function predictGender() {
-      const dob = document.getElementById("dob").value;
-      const deliveryDate = document.getElementById("deliveryDate").value;
-      const conceptionDate = document.getElementById("conceptionDate").value;
+      const dobStr = document.getElementById("dob").value;
+      const eddStr = document.getElementById("deliveryDate").value;
+      const conceptionStr = document.getElementById("conceptionDate").value;
+      const out = document.getElementById("output");
 
-      if (!dob) {
-        document.getElementById("output").innerText = "Please enter the mother's date of birth.";
-        return;
-      }
+      // basic validation
+      if (!dobStr) { out.innerText = "Please enter the mother's date of birth."; return; }
+      if (eddStr && conceptionStr) { out.innerText = "Enter either delivery date OR conception date, not both."; return; }
+      if (!eddStr && !conceptionStr) { out.innerText = "Please enter either the delivery date or conception date."; return; }
 
-      let predictionDate;
-      if (deliveryDate) {
-        predictionDate = new Date(deliveryDate);
-        predictionDate.setMonth(predictionDate.getMonth() - 9);
-      } else if (conceptionDate) {
-        predictionDate = new Date(conceptionDate);
+      const dob = new Date(dobStr);
+      let conceptionDate;
+
+      if (conceptionStr) {
+        conceptionDate = new Date(conceptionStr);
       } else {
-        document.getElementById("output").innerText = "Please enter either the delivery date or conception date.";
+        // derive conception date ≈ EDD - 266 days
+        conceptionDate = new Date(eddStr);
+        conceptionDate.setDate(conceptionDate.getDate() - 266);
+      }
+
+      const age = conceptionDate.getFullYear() - dob.getFullYear();
+      const month = conceptionDate.getMonth() + 1; // 1-12
+
+      if (age < 18 || age > 60) {
+        out.innerText = "Sorry, prediction not available for this age.";
         return;
       }
 
-      const birthDate = new Date(dob);
-      const ageAtConception = predictionDate.getFullYear() - birthDate.getFullYear();
-      const motherMonth = predictionDate.getMonth() + 1;
+      // full Chinese-calendar matrix (age 18–60, months Jan–Dec)
+      const chart = [
+        ["Girl","Boy","Girl","Boy","Boy","Boy","Boy","Boy","Boy","Boy","Boy","Boy"], //18
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Boy","Boy","Boy","Boy","Boy","Boy"], //19
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Boy","Boy","Boy","Boy"], //20
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Boy","Boy","Boy","Boy"], //21
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Girl","Girl","Boy","Boy"], //22
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Boy","Girl","Boy","Boy","Girl","Girl"], //23
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Girl","Boy","Boy","Girl","Girl","Boy"], //24
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //25
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //26
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //27
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //28
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //29
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //30
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //31
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //32
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //33
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //34
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //35
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //36
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //37
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //38
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //39
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //40
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //41
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //42
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //43
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //44
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //45
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //46
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //47
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //48
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //49
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //50
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //51
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //52
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //53
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //54
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //55
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //56
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //57
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"], //58
+        ["Boy","Girl","Boy","Girl","Girl","Boy","Girl","Girl","Girl","Boy","Boy","Girl"], //59
+        ["Girl","Boy","Girl","Boy","Boy","Girl","Boy","Boy","Boy","Girl","Girl","Boy"]  //60
+      ];
 
-      // Chinese gender chart logic
-      const result = (ageAtConception + motherMonth) % 2 === 0 ? "👶 It's a Girl!" : "👦 It's a Boy!";
-      document.getElementById("output").innerText = result;
+      const row = age - 18;
+      const col = month - 1;
+      const prediction = chart[row][col];
+      const emoji = prediction === "Boy" ? "👦" : "👧";
+
+      out.innerText = `Prediction: It's a ${prediction}! ${emoji}`;
     }
   </script>
 </body>
